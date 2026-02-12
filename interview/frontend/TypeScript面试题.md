@@ -54,85 +54,33 @@ tuple：元组类型
 TypeScript完全支持现代JavaScript的异步特性，包括Promise、async/await等。
 ```
 
-* 6、什么是条件类型？如何使用？
+* 6、type 和 interface 共同和区别，如何选择？
 ```text
-条件类型是TypeScript中的高级类型特性，允许我们基于类型关系进行类型选择。
+（1）共同：都能描述一个对象结构、都能被 class 实现、都能被扩展
+（2）区别：type 可以声明基础类型、type 有联合类型和交差类型、type 可以被 typeof 赋值
+（3）选择：能用 interface 就尽量用 interface，除非必须用 type 的时候才用 type
 ```
 
-* 7、什么是映射类型？如何使用？
+* 7、枚举（enum）是什么？
 ```text
-映射类型允许我们从现有类型创建新类型，通过映射现有类型的每个属性。
+枚举是一种对数字值集合进行命名的方式。它们可以增加代码的可读性，并提供一种便捷的方式来使用一组有意义的常量。
 ```
 
-* 8、什么是类型收窄（Type Narrowing）？
+* 8、unknown 和 any 区别？
 ```text
-类型收窄是TypeScript中缩小类型范围的过程，有多种方式可以实现类型收窄。
+unknown 是更安全的 any：
+any 任何类型，会忽略语法检查
+unknown 不可预知的类型，不会忽略语法检查（这就是最大区别）
 ```
 
-* 9、联合类型和交叉类型的区别是什么？
+* 9、keyof 和 typeof 有什么区别？
 ```text
-联合类型和交叉类型是TypeScript中两种重要的类型组合方式。
+typeof 是 JS 基础用法，用于获取类型。
+keyof 是 TS 语法，用于获取所有 key 的类型。
 ```
 
-* 10、TypeScript中的类型体操实战有哪些？
+* 10、数组 Array 和元组 Tuple 的区别是什么？
 
-```html
-// 类型体操是TypeScript中高级类型的实际应用
-// 实现Pick类型
-type MyPick<T, K extends keyof T> = {
-    [P in K]: T[P];
-};
-
-// 实现Readonly类型
-type MyReadonly<T> = {
-    readonly [P in keyof T]: T[P];
-};
-
-// 实现深度Readonly
-type DeepReadonly<T> = {
-    readonly [P in keyof T]: T[P] extends object 
-        ? DeepReadonly<T[P]> 
-        : T[P];
-};
-
-// 实现Partial类型
-type MyPartial<T> = {
-    [P in keyof T]?: T[P];
-};
-
-// 实现Required类型
-type MyRequired<T> = {
-    [P in keyof T]-?: T[P];
-};
-
-// 实现Record类型
-type MyRecord<K extends keyof any, T> = {
-    [P in K]: T;
-};
-
-// 实现Exclude类型
-type MyExclude<T, U> = T extends U ? never : T;
-
-// 实现Extract类型
-type MyExtract<T, U> = T extends U ? T : never;
-
-// 实现ReturnType类型
-type MyReturnType<T extends (...args: any) => any> = 
-    T extends (...args: any) => infer R ? R : any;
-
-// 实际应用示例
-interface Todo {
-    title: string;
-    description: string;
-    completed: boolean;
-}
-
-// 只读的Todo类型
-type ReadonlyTodo = MyReadonly<Todo>;
-
-// 可选的Todo类型
-type PartialTodo = MyPartial<Todo>;
-
-// 提取Todo中的字符串类型属性
-type StringProps = MyExtract<keyof Todo, string>;
+```text
+数组元素只能有一种类型，元祖元素可以有多种类型。
 ```
