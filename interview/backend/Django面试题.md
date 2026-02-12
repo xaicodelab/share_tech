@@ -5,7 +5,16 @@
 ```text
 当用户在浏览器输入url时，浏览器会生成请求头和请求体发送给服务端，url经过Django中的wsgi时请求对象创建完成，
 经过Django的中间件，然后到路由系统匹配路由，匹配成功后走到相对应的views函数，视图函数执行相关的逻辑代码返回执行结果，
-Django把客户端想要的数据作为一个字符串返回给客户端，客户端接收数据，渲染到页面展现给用户
+Django把客户端想要的数据作为一个字符串返回给客户端，客户端接收数据，渲染到页面展现给用户。
+详细：
+uWSGI服务器通过wsgi协议，将HttpRequest交给web框架 （Flask、Django）
+首先到达request中间件，对请求对象进行校验或添加数据，例如：csrf、request.session，如果验证不通过直接跳转到response中间件
+通过URL配置文件找到urls.py文件
+根据浏览器发送的URL，通过视图中间件去匹配不同的视图函数或视图类，如果没有找到相对应的视图函数，就直接跳转到response中间件
+在视图函数或视图类中进行业务逻辑处理，处理完返回到response中间件
+模型类通过ORM获取数据库数据，并返回序列化json或渲染好的Template到response中间件
+所有最后离开的响应都会到达response中间件，对响应的数据进行处理，返回HttpResponse给wsgi
+wsgi经过uWSGI服务器，将响应的内容发送给浏览器。
 ```
 
 * 2、Django的MTV模式是什么？
@@ -17,24 +26,16 @@ View(视图)：负责业务逻辑，并在适当的时候调用Model和Template
 
 * 3、什么是wsgi，uwsgi，uWSGI？
 ```text
-（1）WSGI:
-WSGI是Web服务器网关接口，是一套协议。用于接收用户请求并将请求进行初次封装，然后将请求交给web框架实现wsgi协议的模块：
-wsgiref，本质上就是编写一个socket服务端，用于接收用户请求(django)
-werkzeug，本质上就是编写一个socket服务端，用于接收用户请求(flask)
-
-（2）uwsgi:
-uwsgi与WSGI一样是一种通信协议，它是uWSGI服务器的独占协议，用于定义传输信息的类型
-
-（3）uWSGI:
-uWSGI是一个web服务器，实现了WSGI协议，uWSGI协议，http协议
+uwsgi：是uWSGI服务器实现的独有协议，用于Nginx服务与uWSGI服务的通信规范
+uWSGI：是一个Web服务器，它实现了WSGI/uwsgi/HTTP等协议，用于接收Nginx转发的动态请求，处理后发个python应用程序
+WSGI：用在python web框架（Django/Flask）编写的应用程序与web服务器之间的规范
 ```
 
-* 4、CSRF的实现机制是什么？
+* 4、Django的中间件是什么并简述其作用？
 ```text
-（1）启用中间件
-（2）post请求
-（3）验证码
-（4）表单中添加{% csrf_token%}标签
+中间件是一个用来处理Django请求和响应的框架级钩子。
+它是一个轻量、低级别的插件系统，用于在全局范围内改变Django的输入和输出。
+每个中间件组件都负责做一些特定的功能。
 ```
 
 * 5、Django中提供了runserver为什么不能用来部署项目(runserver与uWSGI的区别)
@@ -42,7 +43,7 @@ uWSGI是一个web服务器，实现了WSGI协议，uWSGI协议，http协议
 （1）runserver方法是调试 Django 时经常用到的运行方式，它使用Django自带的
 WSGI Server 运行，主要在测试和开发中使用，并且 runserver 开启的方式也是单进程 。
 （2）uWSGI是一个Web服务器，它实现了WSGI协议、uwsgi、http 等协议。注意uwsgi是一种通信协议，而uWSGI是实现uwsgi协议和WSGI协议的 Web 服务器。
-uWSGI具有超快的性能、低内存占用和多app管理等优点，并且搭配着Nginx就是一个生产环境了，能够将用户访问请求与应用 app 隔离开，实现真正的署 。
+uWSGI具有超快的性能、低内存占用和多app管理等优点，并且搭配着Nginx就是一个生产环境了，能够将用户访问请求与应用 app 隔离开，实现真正的署。
 相比来讲，支持的并发量更高，方便管理多进程，发挥多核的优势，提升性能。
 ```
 
