@@ -4,6 +4,7 @@
 
 * [推荐几款软件开发辅助工具](tools/推荐几款软件开发辅助工具.md "推荐几款软件开发辅助工具")
 * [爆火全网的OpenClaw不止是AI工具](tools/爆火全网的OpenClaw不止是AI工具.md "爆火全网的OpenClaw不止是AI工具")
+* [炸圈！Seedance2.0 新手速通指南](tools/炸圈！Seedance2.0新手速通指南.md "炸圈！Seedance2.0 新手速通指南")
 
 ## 面试题分享
 
